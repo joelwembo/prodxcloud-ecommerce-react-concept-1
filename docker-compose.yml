@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  webapplication:
+    image: joelwembo/prodxcloud-store:latest
+    container_name: prodxcloud-store 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./ngnix.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - web_network  
+
+networks:
+  web_network:
+    driver: bridge      

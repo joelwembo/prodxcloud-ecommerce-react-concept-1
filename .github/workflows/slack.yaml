@@ -1,0 +1,22 @@
+# name: Slack Notification
+
+# on: [push]
+
+# jobs:
+#   notify:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       # Your build/test steps can go here
+
+#       - name: Notify Slack
+#         uses: rtCamp/action-slack-notify@v3
+#         env:
+#           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+#         with:
+#           status: ${{ job.status }}
+#           author_name: ${{ github.actor }}
+#           fields: repo,message
