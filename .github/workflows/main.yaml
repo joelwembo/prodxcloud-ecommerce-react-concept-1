@@ -32,25 +32,24 @@ jobs:
 
     strategy:
       matrix:
-        environment: [dev, qa, staging, prod]
+        environment: [qa]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Build and Push Docker image
-        id: docker_build
-        run: |
-          echo ${{ env.DOCKERHUB_TOKEN }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin
-          docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
-          docker push joelwembo/prodxcloud-store:${{ matrix.environment }}
-        env:
-          DOCKER_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
-          DOCKER_PASSWORD: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Login, Build and Push Docker image
+        uses: docker/login-action@v2
+        with:
+            username: ${{ env.DOCKERHUB_USERNAME }}
+            password: ${{ env.DOCKERHUB_TOKEN }}
+      - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
+      - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}    
 
       - name: Terraform Setup and Apply
         id: terraform_apply
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.0.0
       - name: Terraform Init
