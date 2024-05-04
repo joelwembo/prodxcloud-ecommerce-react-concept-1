@@ -99,13 +99,14 @@ jobs:
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
-      # - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
-      # - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
+      - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
+      - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
       - run: docker version
 
   trivyScanDockerImage:
         name: trivy scan - security scanner)
         runs-on: ubuntu-latest
+        if: ${{ always() }}
         needs: [CodeScan-SonarCloud, build]
         steps:
           - name: Checkout code
@@ -113,11 +114,11 @@ jobs:
           - name: Build an image from Dockerfile
             run: |
               docker version
-              # docker build -t docker.io/joelwembo/prodxcloud-store:latest .
+              # docker build -t docker.io/joelwembo/prodxcloud-store:${{ matrix.environment }} .
           - name: Run Trivy vulnerability scanner
             uses: aquasecurity/trivy-action@master
             with:
-              image-ref: 'docker.io/joelwembo/prodxcloud-store:latest'
+              image-ref: 'docker.io/joelwembo/prodxcloud-store:${{ matrix.environment }}'
               format: 'table'
             #   exit-code: '1'
               ignore-unfixed: true
