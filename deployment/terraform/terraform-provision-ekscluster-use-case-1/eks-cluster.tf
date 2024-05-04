@@ -23,9 +23,14 @@ resource "aws_iam_role_policy_attachment" "prodxcloud-cluster-AmazonEKSClusterPo
 }
 
 resource "aws_eks_cluster" "prodxcloud-cluster" {
+  count = 3
   name     = "prodxcloud-cluster"
   version  = "1.29"
   role_arn = aws_iam_role.prodxcloud-cluster.arn
+
+  # multi cluster
+  # name            = "${var.cluster-name}_${count.index}"
+  # role_arn        = "${aws_iam_role.demo-cluster.arn}"
 
   # assign ips subnet
   vpc_config {

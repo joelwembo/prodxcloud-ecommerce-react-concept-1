@@ -1,5 +1,5 @@
 # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
-name: production --> Terraform Provision To AWS EKS - Enterprise
+name: PRODUCTION --> Terraform CI/CD pipeline To AWS EKS - Enterprise
 
 
 concurrency:
@@ -8,10 +8,10 @@ concurrency:
 
 on:
     push:
-      branches: [master, main, dev/*, feature/*, release/*, staging/*, production/*, qa]
+      branches: [master, production/*]
     pull_request:
       types: [review_requested]
-      branches: [master, main, dev/*, feature/*, release/*, staging/*, production/*, qa]
+      branches: [master, production/*]
 
     workflow_dispatch:
       inputs:
@@ -21,7 +21,7 @@ on:
           required: false
     
         account:
-          description: dev, staging, production
+          description:  production
           default: production
           required: true  
 
@@ -31,7 +31,7 @@ on:
           required: true
      
         environment:
-          description: development (main, master, qa, uat, feature), production (final, latest)
+          description: production (final, latest)
           default: production
           required: false  
 
