@@ -1,4 +1,4 @@
-name: Scan Docker Image CI Pipeline
+name: Scan Docker Image CI Pipeline 1
 
 on:
   push:
