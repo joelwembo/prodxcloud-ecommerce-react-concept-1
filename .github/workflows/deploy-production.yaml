@@ -36,9 +36,8 @@ on:
           required: false  
 
 env:
- # verbosity setting for Terraform log
+# verbosity setting for Terraform log
  TF_LOG: INFO
- # Credentials for deployment to AWS
  APP_NAME: prodxcloud-store
  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,12 +45,13 @@ env:
  DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
  AWS_DEFAULT_REGION: "us-east-1"  
- # S3 bucket for the Terraform state
- #  BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
-#  TF_CLOUD_ORGANIZATION: "prodxcloud"
-#  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN}}
-#  TF_WORKSPACE: "prodxcloud"
  CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
+ # S3 bucket for the Terraform state
+ # BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
+ #  TF_CLOUD_ORGANIZATION: "prodxcloud"
+ #  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN}}
+ #  TF_WORKSPACE: "prodxcloud"
+ 
 
 jobs:
   CodeScan-SonarCloud:
@@ -126,8 +126,8 @@ jobs:
               ignore-unfixed: true
               vuln-type: 'os,library'
               severity: 'CRITICAL,HIGH'  
-          - name: Push Docker Image for production  
-            run: docker push joelwembo/prodxcloud-store:prod   
+          # - name: Push Docker Image for production  
+          #   run: docker push joelwembo/prodxcloud-store:prod   
 
   qa:
     name: QA Deploy to Staging
