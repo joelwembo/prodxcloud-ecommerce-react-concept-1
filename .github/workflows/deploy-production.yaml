@@ -1,6 +1,11 @@
 # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
 name: production --> CI/CD Terraform Pipeline Provision To Deploy to AWS EKS 
 
+
+concurrency:
+  group: production
+  cancel-in-progress: true
+
 on:
     push:
       branches: [master, main, dev/*, feature/*, release/*, staging/*, production/*, qa]
@@ -26,8 +31,18 @@ env:
  CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
 
 jobs:
+  CodeScan-SonarCloud:
+    name: SonarCloud Code Scaning
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+             fetch-depth: 0
+      - name: Code Scaning process 
+        run: pwd  
   build:
     runs-on: ubuntu-latest
+    needs: [CodeScan-SonarCloud]
     strategy:
       matrix:
         node-version: [18]
@@ -65,13 +80,33 @@ jobs:
       # - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
       - run: docker version
 
+  trivyScanDockerImage:
+        name: trivy scan (Docker Image security scanner)
+        runs-on: ubuntu-20.04
+        needs: [build]
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v2
+          - name: Build an image from Dockerfile
+            run: |
+              docker build -t docker.io/joelwembo/prodxcloud-store:latest .
+          - name: Run Trivy vulnerability scanner
+            uses: aquasecurity/trivy-action@master
+            with:
+              image-ref: 'docker.io/joelwembo/prodxcloud-store:latest'
+              format: 'table'
+            #   exit-code: '1'
+              ignore-unfixed: true
+              vuln-type: 'os,library'
+              severity: 'CRITICAL,HIGH'     
+
   qa:
     name: QA Deploy to Staging
     environment:
       name: staging
       url: https://staging.production.net/
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, trivyScanDockerImage]
     steps:
       - name: Running Tests
         uses: actions/checkout@v3
