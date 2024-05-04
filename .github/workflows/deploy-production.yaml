@@ -39,6 +39,7 @@ env:
  # verbosity setting for Terraform log
  TF_LOG: INFO
  # Credentials for deployment to AWS
+ APP_NAME: prodxcloud-store
  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
  DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -86,21 +87,22 @@ jobs:
           cache: 'npm'
       # npm install all packages  
       - name: Install dependencies  
-        run: npm install --legacy-peer-deps
+        # run: npm install --legacy-peer-deps
+        run: npm version
       
-      - name: Build reactjs application
-        run: npm run build --if-present
+      # - name: Build reactjs application
+      #   run: npm run build --if-present
       
       - name: list all packages & dependencies
         run: npm list
       # Dockerhub Build and Push
-      - name: Build and Push Docker image
+      - name: Build docker docker image for production
         uses: docker/login-action@v2
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
-      - run: docker build -t joelwembo/prodxcloud-store:prod .
-      - run: docker push joelwembo/prodxcloud-store:prod
+      # - run: docker build -t joelwembo/prodxcloud-store:prod .
+      # - run: docker push joelwembo/prodxcloud-store:prod
       - run: docker version
 
   trivyScanDockerImage:
@@ -123,7 +125,9 @@ jobs:
             #   exit-code: '1'
               ignore-unfixed: true
               vuln-type: 'os,library'
-              severity: 'CRITICAL,HIGH'     
+              severity: 'CRITICAL,HIGH'  
+          - name: Push Docker Image for production  
+            run: docker push joelwembo/prodxcloud-store:prod   
 
   qa:
     name: QA Deploy to Staging
@@ -196,6 +200,15 @@ jobs:
 
       - name: Get Load Balancer DNS
         run: kubectl get services prodxcloud-store
+
+    outputs:
+      APP_NAME: prodxcloud-store
+      AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      DOCKER_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+      DOCKER_PASSWORD: ${{ env.DOCKERHUB_TOKEN }}
+      KUBE_CONFIG_DATA: ${{ env.KUBE_CONFIG_DATA }}
+      AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
 
       # - name: Kubernetes Deployment
       #   run: kubectl apply -f k8s/deployment.yaml
