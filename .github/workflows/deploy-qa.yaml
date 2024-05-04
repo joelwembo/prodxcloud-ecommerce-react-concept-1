@@ -64,6 +64,7 @@ jobs:
       # - run: npm ci
       # - run: npm run build --if-present
       # - run: npm list
+      # - run: npm test
 
   push-docker-image:
     name: Build Docker image and push to repositories for qa
@@ -85,8 +86,9 @@ jobs:
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
-      - run: docker build -t ${{env.DOCKER_IMAGE}} .
-      - run: docker push ${{env.DOCKER_IMAGE}} 
+    #   - run: docker build -t ${{env.DOCKER_IMAGE}} .
+    #   - run: docker push ${{env.DOCKER_IMAGE}} 
+      - run: docker version
 
   provision-aws-eks-cluster-qa:
     runs-on: ubuntu-latest
@@ -97,7 +99,8 @@ jobs:
 
       - name: Create EKS Cluster
         # run: aws eks create-cluster --region ${{ env.AWS_DEFAULT_REGION}} --name ${{ env.CLUSTER_NAME}} --version 1.29  --without-nodegroup
-        run: eksctl create cluster --name ${{ env.CLUSTER_NAME}} --nodegroup-name ng-test --node-type t3.medium --nodes 2
+        # run: eksctl create cluster --name ${{ env.CLUSTER_NAME}} --nodegroup-name ng-test --node-type t3.medium --nodes 2
+        run: aws eks list-clusters
         env:
           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}

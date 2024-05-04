@@ -43,3 +43,15 @@ kubectl delete -f k8s/public-lb.yaml
 kubectl delete -f k8s/private-lb.yaml 
 kubectl delete -f k8s/deployment-nginx.yaml 
 kubectl delete -f k8s/deployment.yaml 
+
+
+# multi-cluster command for manual
+
+eksctl create cluster --name prodxcloud-store-qa --nodegroup-name ng-qa --node-type t3.medium --nodes 2
+aws eks list-clusters
+aws eks --region us-east-1 update-kubeconfig --name ${{ env.CLUSTER_NAME}}
+kubectl apply -f /k8s/deployment-qa.yaml
+kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --name=${{ env.CLUSTER_SERVICE}}
+kubectl get pods
+kubectl get services ${{ env.CLUSTER_SERVICE}} 
+c
