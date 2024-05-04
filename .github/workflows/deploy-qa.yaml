@@ -122,6 +122,7 @@ jobs:
 
       - name: Deploy to EKS
         run: kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --name=${{ env.CLUSTER_SERVICE}} 
+      - name: Get all running cluster  
         run: aws eks list-clusters
 
       - name: Load Balancer DNS
