@@ -1,5 +1,5 @@
 # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
-name: production --> Terraform Pipeline Provision To Deploy to AWS EKS 
+name: production --> CI/CD Terraform Pipeline Provision To Deploy to AWS EKS 
 
 on:
     push:
@@ -25,9 +25,54 @@ env:
  CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
 
 jobs:
-  build_and_deploy:
-    name: Build and Deploy to EKS
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18]
+    steps:
+      - uses: actions/checkout@v3
+      # caching mechanisme
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      # npm install all packages    
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm list
+      # Dockerhub Build and Push
+      - name: Build and Push Docker image
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+      # - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
+      # - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
+      - run: docker version
+
+  qa:
+    runs-on: ubuntu-latest
+    name: QA Testing
+    needs: build
+    steps:
+      - name: Running Tests
+        uses: actions/checkout@v3
+      - run: echo "running Tests"
+      # - run: npm test
+  
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    needs: qa
 
     strategy:
       matrix:
@@ -36,16 +81,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-
-      - name: Login, Build and Push Docker image
-        uses: docker/login-action@v2
-        with:
-          username: ${{ env.DOCKER_USERNAME }}
-          password: ${{ env.DOCKER_PASSWORD }}
-      # - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
-      # - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
-      - run: docker version
 
       - name: Terraform Setup and Apply
         id: terraform_apply
