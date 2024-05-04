@@ -49,9 +49,8 @@ kubectl delete -f k8s/deployment.yaml
 
 eksctl create cluster --name prodxcloud-store-qa --nodegroup-name ng-qa --node-type t3.medium --nodes 2
 aws eks list-clusters
-aws eks --region us-east-1 update-kubeconfig --name ${{ env.CLUSTER_NAME}}
-kubectl apply -f /k8s/deployment-qa.yaml
-kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --name=${{ env.CLUSTER_SERVICE}}
+aws eks --region us-east-1 update-kubeconfig --name prodxcloud-store-qa
+kubectl apply -f ./k8s/deployment-qa.yaml
+kubectl expose deployment prodxcloud-store-qa --type=LoadBalancer --type=LoadBalancer --port=80  --name=prodxcloud-cluster-qa-service
 kubectl get pods
-kubectl get services ${{ env.CLUSTER_SERVICE}} 
-c
+kubectl get services prodxcloud-cluster-qa-service
