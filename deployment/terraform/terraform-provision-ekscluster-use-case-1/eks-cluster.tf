@@ -23,7 +23,7 @@ resource "aws_iam_role_policy_attachment" "prodxcloud-cluster-AmazonEKSClusterPo
 }
 
 resource "aws_eks_cluster" "prodxcloud-cluster" {
-  count = 3
+  # count = 3
   name     = "prodxcloud-cluster"
   version  = "1.29"
   role_arn = aws_iam_role.prodxcloud-cluster.arn

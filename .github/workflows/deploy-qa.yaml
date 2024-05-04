@@ -32,19 +32,19 @@ on:
 permissions:
     contents: write   
 env:
-# verbosity setting for Terraform log
-TF_LOG: INFO
-APP_NAME: "prodxcloud-store-qa"
-DOCKER_IMAGE: "joelwembo/prodxcloud-store:qa"
-AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-CLUSTER_NAME: "prodxcloud-cluster-qa"
-CLUSTER_SERVICE: "prodxcloud-cluster-qa-service"
-AWS_DEFAULT_REGION: "us-east-1"  
-CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
+    # verbosity setting for Terraform log
+    TF_LOG: INFO
+    APP_NAME: "prodxcloud-store-qa"
+    DOCKER_IMAGE: "joelwembo/prodxcloud-store:qa"
+    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+    DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+    KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+    CLUSTER_NAME: "prodxcloud-cluster-qa"
+    CLUSTER_SERVICE: "prodxcloud-cluster-qa-service"
+    AWS_DEFAULT_REGION: "us-east-1"  
+    CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
 
 
 jobs:
