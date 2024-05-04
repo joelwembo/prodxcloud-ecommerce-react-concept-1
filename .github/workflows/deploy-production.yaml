@@ -99,8 +99,8 @@ jobs:
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
-      - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
-      - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
+      - run: docker build -t joelwembo/prodxcloud-store:prod .
+      - run: docker push joelwembo/prodxcloud-store:prod
       - run: docker version
 
   trivyScanDockerImage:
@@ -114,11 +114,11 @@ jobs:
           - name: Build an image from Dockerfile
             run: |
               docker version
-              # docker build -t docker.io/joelwembo/prodxcloud-store:${{ matrix.environment }} .
+              # docker build -t docker.io/joelwembo/prodxcloud-store:prod .
           - name: Run Trivy vulnerability scanner
             uses: aquasecurity/trivy-action@master
             with:
-              image-ref: 'docker.io/joelwembo/prodxcloud-store:${{ matrix.environment }}'
+              image-ref: 'docker.io/joelwembo/prodxcloud-store:prod'
               format: 'table'
             #   exit-code: '1'
               ignore-unfixed: true
