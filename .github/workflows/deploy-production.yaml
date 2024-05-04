@@ -1,5 +1,5 @@
 # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
-name: Terraform Pipeline Provision To Deploy to AWS EKS 
+name: production --> Terraform Pipeline Provision To Deploy to AWS EKS 
 
 on:
     push:

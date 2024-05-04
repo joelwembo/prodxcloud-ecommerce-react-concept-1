@@ -1,43 +1,43 @@
-name: "sonarCloud Scan"
+# name: "sonarCloud Scan"
 
-on:
-  push:
-    branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
-  pull_request:
-    branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+# on:
+#   push:
+#     branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+#   pull_request:
+#     branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
 
-permissions:
-    contents: write   
-env:
-  TF_LOG: INFO
-  # Credentials for deployment to AWS
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-  DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
-  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  G_TOKEN: ${{ secrets.G_TOKEN }}
-  SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}  
-  AWS_DEFAULT_REGION: "us-east-1"
+# permissions:
+#     contents: write   
+# env:
+#   TF_LOG: INFO
+#   # Credentials for deployment to AWS
+#   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#   DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+#   DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+#   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+#   G_TOKEN: ${{ secrets.G_TOKEN }}
+#   SONAR_TOKEN:  ${{ secrets.SONAR_TOKEN }}  
+#   AWS_DEFAULT_REGION: "us-east-1"
   
 
-jobs:
-  CodeScan-Analysis:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-            fetch-depth: 0
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v1.8
-        env:
-            GITHUB_TOKEN: ${{ env.G_TOKEN }}
-            SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-        with:
-          args: >
-              -Dsonar.organization=joelwembo
-              -Dsonar.projectKey=joelwembo_prodxcloud-ecommerce-react-concept-1
-              -Dsonar.python.coverage.reportPaths=coverage.xml
+# jobs:
+#   CodeScan-Analysis:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#             fetch-depth: 0
+#       - name: SonarCloud Scan
+#         uses: sonarsource/sonarcloud-github-action@master
+#         env:
+#             GITHUB_TOKEN: ${{ env.G_TOKEN }}
+#             SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+#         with:
+#           args: >
+#               -Dsonar.organization=joelwembo
+#               -Dsonar.projectKey=joelwembo_prodxcloud-ecommerce-react-concept-1
+#               -Dsonar.python.coverage.reportPaths=coverage.xml
 
-      - name: Clean up .scannerwork folder
-        run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork        
+#       - name: Clean up .scannerwork folder
+#         run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork        

@@ -1,0 +1,96 @@
+# # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
+# name: QA --> Terraform Pipeline Provision To Deploy to AWS EKS 
+
+# on:
+#     push:
+#       branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+#     pull_request:
+#       branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+
+# env:
+#  # verbosity setting for Terraform log
+#  TF_LOG: INFO
+#  # Credentials for deployment to AWS
+#  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#  DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+#  DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+#  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+#  AWS_DEFAULT_REGION: "us-east-1"  
+#  # S3 bucket for the Terraform state
+#  #  BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
+# #  TF_CLOUD_ORGANIZATION: "prodxcloud"
+# #  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN}}
+# #  TF_WORKSPACE: "prodxcloud"
+#  CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
+
+# jobs:
+#   build_and_deploy:
+#     name: Build and Deploy to EKS
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         environment: [qa]
+
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+
+
+#       - name: Login, Build and Push Docker image
+#         uses: docker/login-action@v2
+#         with:
+#           username: ${{ env.DOCKER_USERNAME }}
+#           password: ${{ env.DOCKER_PASSWORD }}
+#       # - run: docker build -t joelwembo/prodxcloud-store:${{ matrix.environment }} .
+#       # - run: docker push joelwembo/prodxcloud-store:${{ matrix.environment }}  
+#       - run: docker version
+
+#       - name: Terraform Setup and Apply
+#         id: terraform_apply
+#         uses: hashicorp/setup-terraform@v3
+#         with:
+#           terraform_version: 1.1.7
+#           # cli_config_credentials_hostname: 'terraform.example.com'
+#           # cli_config_credentials_token: ${{ env.TF_API_TOKEN }}
+#       - name: Terraform Init
+#         run: terraform init
+#         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+#       # - name: Terraform Plan
+#       #   id: terraform_plan
+#       #   run: terraform plan -out=tfplan -var="environment=${{ matrix.environment }}"
+#       #   working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+#       - name: Terraform Apply
+#         if: matrix.environment == 'qa' || matrix.environment == 'prod'
+#         run: terraform apply -auto-approve -input=false -lock=false
+#         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+#       # - name: Kubernetes Setup
+#       #   uses: azure/k8s-set-context@v1
+#       #   with:
+#       #     kubeconfig: ${{ env.KUBE_CONFIG_DATA }}
+
+#       - name: Update kubeconfig
+#         run: aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
+#         env:
+#           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+#           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+#           AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION}}  
+
+#       - name: Get Kubernetes Pods
+#         run: kubectl get pods --namespace default
+
+#       - name: Get Kubernetes Nodes
+#         run: kubectl get nodes
+
+#       - name: Get Kubernetes Services
+#         run: kubectl get services --namespace default
+
+#       - name: Get Load Balancer DNS
+#         run: kubectl get services prodxcloud-store
+
+#       # - name: Kubernetes Deployment
+#       #   run: kubectl apply -f k8s/deployment.yaml
