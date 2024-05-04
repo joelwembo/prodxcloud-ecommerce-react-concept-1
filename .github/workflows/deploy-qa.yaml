@@ -41,7 +41,7 @@ env:
     DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
     DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-    CLUSTER_NAME: "prodxcloud-cluster-qa"
+    CLUSTER_NAME: "prodxcloud-store-qa"
     CLUSTER_SERVICE: "prodxcloud-cluster-qa-service"
     AWS_DEFAULT_REGION: "us-east-1"  
     CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
