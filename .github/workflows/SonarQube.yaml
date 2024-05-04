@@ -38,3 +38,6 @@ jobs:
               -Dsonar.organization=joelwembo
               -Dsonar.projectKey=joelwembo_prodxcloud-ecommerce-react-concept-1
               -Dsonar.python.coverage.reportPaths=coverage.xml
+
+      - name: Clean up .scannerwork folder
+        run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork        
