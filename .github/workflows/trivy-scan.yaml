@@ -1,30 +1,30 @@
-name: Scan Docker Image CI Pipeline 1
+# name: Scan Docker Image CI Pipeline 1
 
-on:
-  push:
-    branches:
-      - main
-      - master
-      - production
-      - staging
-      - dev
-  pull_request:
-jobs:
-  trivyScanDockerImage:
-    name: trivy scan ( Docker Image security scanner )
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build an image from Dockerfile
-        run: |
-          docker build -t docker.io/joelwembo/prodxcloud-store:latest .
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'docker.io/joelwembo/prodxcloud-store:latest'
-          format: 'table'
-        #   exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL,HIGH'
+# on:
+#   push:
+#     branches:
+#       - main
+#       - master
+#       - production
+#       - staging
+#       - dev
+#   pull_request:
+# jobs:
+#   trivyScanDockerImage:
+#     name: trivy scan ( Docker Image security scanner )
+#     runs-on: ubuntu-20.04
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+#       - name: Build an image from Dockerfile
+#         run: |
+#           docker build -t docker.io/joelwembo/prodxcloud-store:latest .
+#       - name: Run Trivy vulnerability scanner
+#         uses: aquasecurity/trivy-action@master
+#         with:
+#           image-ref: 'docker.io/joelwembo/prodxcloud-store:latest'
+#           format: 'table'
+#         #   exit-code: '1'
+#           ignore-unfixed: true
+#           vuln-type: 'os,library'
+#           severity: 'CRITICAL,HIGH'
