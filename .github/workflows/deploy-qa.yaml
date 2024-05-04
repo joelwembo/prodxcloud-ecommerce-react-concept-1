@@ -95,8 +95,9 @@ jobs:
       - name: AWS EKS Deployment
         uses: actions/checkout@v3
 
-      - name: Create EKS Creater 
-        run: aws eks list-clusters
+      - name: Create EKS Cluster
+        # run: aws eks create-cluster --region ${{ env.AWS_DEFAULT_REGION}} --name ${{ env.CLUSTER_NAME}} --version 1.29  --without-nodegroup
+        run: eksctl create cluster --name ${{ env.CLUSTER_NAME}} --nodegroup-name ng-test --node-type t3.medium --nodes 2
         env:
           AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
