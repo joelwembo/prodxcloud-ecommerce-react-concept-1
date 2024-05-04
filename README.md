@@ -312,7 +312,8 @@ pipeline {
 
 ## EKS multi-cluster and multi-environment deployment
 
-
+- commit : added new feature for multi stage deployment
+- commit : add new environment before production
 
 Thank you for Reading !! 🙌🏻, see you in the next article.🤘
 
