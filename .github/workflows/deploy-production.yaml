@@ -3,9 +3,9 @@ name: production --> Terraform Pipeline Provision To Deploy to AWS EKS
 
 on:
     push:
-      branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+      branches: [master, main, dev/*, feature/*, release/*, staging/*, production/*, qa]
     pull_request:
-      branches: [master, main, dev/*, feature/*, release/*, staging/*, prod/*, qa]
+      branches: [master, main, dev/*, feature/*, release/*, staging/*, production/*, qa]
 
 env:
  # verbosity setting for Terraform log
@@ -31,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        environment: [qa]
+        environment: [production]
 
     steps:
       - name: Checkout repository
@@ -64,7 +64,7 @@ jobs:
       #   working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
 
       - name: Terraform Apply
-        if: matrix.environment == 'qa' || matrix.environment == 'prod'
+        if: matrix.environment == 'qa' || matrix.environment == 'production'
         run: terraform apply -auto-approve -input=false -lock=false
         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
 
