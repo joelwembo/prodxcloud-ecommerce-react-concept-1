@@ -1,5 +1,5 @@
 
-name: QA --> Terraform CI/CD pipeline To AWS EKS - Enterprise
+name: QA --> Terraform CI/CD pipeline To AWS EKS Cluster - Enterprise
 
 on:
   push:

@@ -1,5 +1,5 @@
 
-name: STAGING --> Terraform CI/CD pipeline To AWS EKS - Enterprise
+name: STAGING --> Terraform CI/CD pipeline To AWS EKS Cluster - Enterprise
 
 on:
   push:
@@ -86,8 +86,8 @@ jobs:
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
-      - run: docker build -t ${{env.DOCKER_IMAGE}} .
-      - run: docker push ${{env.DOCKER_IMAGE}} 
+    #   - run: docker build -t ${{env.DOCKER_IMAGE}} .
+    #   - run: docker push ${{env.DOCKER_IMAGE}} 
       - run: docker version
 
   provision-aws-eks-cluster-staging:

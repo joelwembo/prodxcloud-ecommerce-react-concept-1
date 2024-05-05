@@ -1,5 +1,5 @@
 # Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
-name: PRODUCTION --> Terraform CI/CD pipeline To AWS EKS - Enterprise
+name: PRODUCTION --> Terraform CI/CD pipeline To AWS EKS Cluster - Enterprise
 
 
 concurrency:
