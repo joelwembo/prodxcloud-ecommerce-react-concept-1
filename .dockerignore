@@ -119,3 +119,6 @@ dist
 
 deployments
 ./deployments
+
+build
+.github
