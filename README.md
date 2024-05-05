@@ -107,11 +107,9 @@ chmod 400 ~/.ssh/mykey
 
 ```
 
-
-
+```
 
 ## Github Actions 
-
 
 
 ```
@@ -155,7 +153,6 @@ on:
 env:
 
 
-# verbosity setting for Terraform log
  TF_LOG: INFO
  APP_NAME: prodxcloud-store
  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -165,12 +162,7 @@ env:
  KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
  AWS_DEFAULT_REGION: "us-east-1"  
  CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
- # S3 bucket for the Terraform state
- # BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
- #  TF_CLOUD_ORGANIZATION: "prodxcloud"
- #  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN}}
- #  TF_WORKSPACE: "prodxcloud"
- 
+
 
 jobs:
   CodeScan-SonarCloud:
@@ -225,7 +217,7 @@ jobs:
       - run: docker version
 
   trivyScanDockerImage:
-        name: trivy scan - security scanner)
+        name: trivy scan - security scanner
         runs-on: ubuntu-latest
         if: ${{ always() }}
         needs: [CodeScan-SonarCloud, build]
@@ -338,9 +330,6 @@ jobs:
 
 ```
 
-aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
-eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
-Updated context arn:aws:eks:us-east-1:059978233428:cluster/prodxcloud-cluster in /root/.kube/config
 
 kubectl get svc
 
@@ -356,11 +345,14 @@ kubectl apply -f k8s/private-lb.yaml
 
 kubectl get pods
 kubectl get services
-
+```
+```
 
 kubectl apply -f k8s/cluster-autoscaler.yaml
 kubectl get pods -n kube-system
+```
 
+```
 
 kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
 
@@ -368,13 +360,7 @@ Expose the application without namespace because we are the default namespace
 kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store
 kubectl get services prodxcloud-store
 kubectl get svc
-
-# delete
-
-kubectl delete -f k8s/public-lb.yaml
-kubectl delete -f k8s/private-lb.yaml 
-kubectl delete -f k8s/deployment-nginx.yaml 
-kubectl delete -f k8s/deployment.yaml 
+```
 
 
 # multi-cluster command for manual process
@@ -401,7 +387,7 @@ kubectl get services prodxcloud-cluster-staging-service
 
 ```
 
-
+```
 
 ## EKS multi-cluster and multi-environment deployment
 
