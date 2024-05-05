@@ -339,9 +339,8 @@ jobs:
 ```
 
 aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
-
-#  eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
-#  Updated context arn:aws:eks:us-east-1:059978233428:cluster/prodxcloud-cluster in /root/.kube/config
+eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
+Updated context arn:aws:eks:us-east-1:059978233428:cluster/prodxcloud-cluster in /root/.kube/config
 
 kubectl get svc
 
@@ -360,19 +359,12 @@ kubectl get services
 
 
 kubectl apply -f k8s/cluster-autoscaler.yaml
-# serviceaccount/cluster-autoscaler created
-# clusterrole.rbac.authorization.k8s.io/cluster-autoscaler created
-# role.rbac.authorization.k8s.io/cluster-autoscaler created
-# clusterrolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
-# rolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
-# deployment.apps/cluster-autoscaler created
-# You can verify that the autoscaler pod is up and running with the following command.
 kubectl get pods -n kube-system
 
 
-# kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
+kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
 
-# Expose the application without namespace because we are the default namespace
+Expose the application without namespace because we are the default namespace
 kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store
 kubectl get services prodxcloud-store
 kubectl get svc
