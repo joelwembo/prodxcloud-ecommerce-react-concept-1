@@ -1,8 +1,8 @@
-# E-Commerce Application: End-to-End CI/CD Pipeline for react applications to AWS CloudFront using Ansible, Jenkins, and Terraform
-![image](https://github.com/joelwembo/prodx-reactwebui-react-demo-1/assets/19718580/79a378fc-d26a-4686-80db-cb2ce26a7eaa)
+# The Guide to Terraform DevOps: Implementing CI/CD Pipelines for EKS workloads with GitHub Actions for Multi-Environments Approach
+![alt text](image.png)
 
 
-In this post, I explain how to use the Jenkins open-source automation server to deploy AWS CloudFront, ACM for SSL Certification, S3 bucket for static web hosting, and Route53 for custom domain names with Terraform, creating a functioning CI/CD pipeline. When properly implemented, the CI/CD pipeline is triggered by code changes pushed to your GitHub repo, automatically fed into a new Jenkins Job, then the output is deployed on AWS CloudFront and S3.
+This technical handbook offers a comprehensive guide on implementing CI/CD Pipelines for EKS workloads using GitHub Actions for Multi-Environments, alongside Terraform for provisioning and HashiCorp Vault for securing secrets, SonarCloud for code quality analysis, and Trivy for vulnerability scanning. GitHub Actions will manage the conventional DevOps workflows, establishing multiple predefined environments for the deployment pipeline, such as DEV, Staging, UAT, Pre-prod, and production. Throughout this article, we’ll illustrate our approach using a React-based e-commerce application as a case study.
 
 - [@Joel O. Wembo](https://www.joelotepawembo.com)
 - [@twitter](twitter.com/joelwembo1)
@@ -54,10 +54,10 @@ You may also see any lint errors in the console.
 ## docker && docker compose
 
  ```
-DOCKER_SCAN_SUGGEST=false docker build -t prodxcloud:latest .
+DOCKER_SCAN_SUGGEST=false docker build -t prodxcloud-store:latest .
  ```
   ```
-docker run -p 80:80 --name react prodxcloud:latest
+docker run -p 80:80 --name react prodxcloud-store:latest
  ```
 
 ## You can install aws cli using the following command
@@ -107,204 +107,305 @@ chmod 400 ~/.ssh/mykey
 
 ```
 
-# AWS playbook
----
-- hosts: localhost
-  connection: local
-  gather_facts: True
 
-  vars:
-    key_name: prodxsecure         # Key used for SSH
-    region: us-east-1      # Region may affect response and pricing
-    image: ami-04b70fa74e45c3917 # look in ec2 > ami (filter owner alias: amazon) or amis of manually launched instances
-    id: "prodxcloud-aws-ec2-lab-1"
-    instance_type: t2.micro       # Choose instance type, check AWS for pricing
-    # vpc_id: subnet-012345
-    sec_group: "prodxcloud-aws-ec2-lab-1"
 
-  tasks:
-    - name: Provisioning EC2 instances
-      block:
 
-      - name: Create security group
-        amazon.aws.ec2_security_group:
-          name: "{{ sec_group }}"
-          description: "Sec group for app"
-          region: "{{ region }}"
-          # aws_access_key: "{{ec2_access_key}}"  # From vault as defined
-          # aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined
-          rules:                                # allows ssh on port 22
-            - proto: tcp
-              ports:
-                - 22
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on ssh port
-            - proto: tcp
-              ports:
-                - 8181
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 8181
+## Github Actions 
 
-            - proto: tcp
-              ports:
-                - 80
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 80 
-
-            - proto: tcp
-              ports:
-                - 8080
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 8080 
-
-            - proto: tcp
-              ports:
-                - 9000
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 9000  
-
-            - proto: tcp
-              ports:
-                - 8000
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 8000
-
-            - proto: tcp
-              ports:
-                - 3306
-              cidr_ip: 0.0.0.0/0
-              rule_desc: allow all on port 3306         
-
-      - name: Amazon EC2 | Create Key Pair      # Create key pair for ssh
-        amazon.aws.ec2_key:
-          name: "{{ key_name }}"
-          region: "{{ region }}"
-          # aws_access_key: "{{ec2_access_key}}"  # From vault as defined
-          # aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined
-          key_material: "{{ item }}"
-        with_file: prodxsecure1.pem
-
-      - name: Start an instance with a public IP address
-        amazon.aws.ec2_instance:
-          name: "public-compute-instance"
-          key_name: "{{ key_name }}"
-          # vpc_subnet_id: "{{ vpc_id }}"
-          instance_type: "{{ instance_type }}"
-          security_group: "{{ sec_group }}"
-           # aws_access_key: "{{ec2_access_key}}"  # From vault as defined
-          # aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined
-          region: "{{ region }}"
-          network:
-            assign_public_ip: true
-          image_id: "{{ image }}"
-          tags:
-            Environment: Testing
-
-      # Always require the 'create_ec2' tag to provision EC2 instance
-      tags: ['never', 'create_ec2'] 
-
-    - name: Facts
-      block: # this block prints out instance data
-
-      - name: Get instances facts
-        ec2_instance_info:
-           # aws_access_key: "{{ec2_access_key}}"  # From vault as defined
-          # aws_secret_key: "{{ec2_secret_key}}"  # From vault as defined
-          region: "{{ region }}"
-        register: result
-
-      - name: Instances ID
-        debug:
-          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
-        loop: "{{ result.instances }}"
-      tags: always
 
 
 ```
+# Github Workflows Terraform Pipeline Provision To Deploy to AWS EKS 
+name: PRODUCTION --> Terraform CI/CD pipeline To AWS EKS Cluster - Enterprise
 
 
-## Jenkins Doc
+concurrency:
+  group: production
+  cancel-in-progress: true
 
-[Jenkins  Doc](deployments/docs/Ansible-EC2-React.drawio)
+on:
+    push:
+      branches: [master, production/*]
+    pull_request:
+      types: [review_requested]
+      branches: [master, production/*]
+
+    workflow_dispatch:
+      inputs:
+        git-ref:
+          description: Git Ref (Optional)
+          default: master
+          required: false
+    
+        account:
+          description:  production
+          default: production
+          required: true  
+
+        account_prod:
+          description: production
+          default: production
+          required: true
+     
+        environment:
+          description: production (final, latest)
+          default: production
+          required: false  
+
+env:
+
+
+# verbosity setting for Terraform log
+ TF_LOG: INFO
+ APP_NAME: prodxcloud-store
+ AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+ AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+ DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+ DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_TOKEN }}
+ KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+ AWS_DEFAULT_REGION: "us-east-1"  
+ CONFIG_DIRECTORY: "./deployment/terraform/terraform-provision-ekscluster-use-case-1"
+ # S3 bucket for the Terraform state
+ # BUCKET_TF_STATE: ${{ secrets.BUCKET_TF_STATE}}
+ #  TF_CLOUD_ORGANIZATION: "prodxcloud"
+ #  TF_API_TOKEN: ${{ secrets.TF_API_TOKEN}}
+ #  TF_WORKSPACE: "prodxcloud"
+ 
+
+jobs:
+  CodeScan-SonarCloud:
+    name: SonarCloud Scaning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+             fetch-depth: 0
+      - name: Code Scaning process 
+        run: pwd  
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    needs: [CodeScan-SonarCloud]
+    strategy:
+      matrix:
+        node-version: [18]
+    steps:
+      - uses: actions/checkout@v3
+      # caching mechanisme
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      # npm install all packages  
+      - name: Install dependencies  
+        run: npm install --legacy-peer-deps
+        # run: npm version
+      
+      - name: Build reactjs application
+        run: npm run build --if-present
+      
+      - name: list all packages & dependencies
+        run: npm list
+      # Dockerhub Build and Push
+      - name: Build docker docker image for production
+        uses: docker/login-action@v2
+        with:
+          username: ${{ env.DOCKER_USERNAME }}
+          password: ${{ env.DOCKER_PASSWORD }}
+      - run: docker build -t joelwembo/prodxcloud-store:prod .
+      - run: docker push joelwembo/prodxcloud-store:prod
+      - run: docker version
+
+  trivyScanDockerImage:
+        name: trivy scan - security scanner)
+        runs-on: ubuntu-latest
+        if: ${{ always() }}
+        needs: [CodeScan-SonarCloud, build]
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v2
+          - name: Build an image from Dockerfile
+            run: |
+              docker version
+              # docker build -t docker.io/joelwembo/prodxcloud-store:prod .
+          - name: Run Trivy vulnerability scanner
+            uses: aquasecurity/trivy-action@master
+            with:
+              image-ref: 'docker.io/joelwembo/prodxcloud-store:prod'
+              format: 'table'
+            #   exit-code: '1'
+              ignore-unfixed: true
+              vuln-type: 'os,library'
+              severity: 'CRITICAL,HIGH'  
+          - name: Push Docker Image for production  
+            run: docker push joelwembo/prodxcloud-store:prod   
+
+  qa:
+    name: QA Deploy to Staging
+    environment:
+      name: staging
+      url: https://staging.production.net/
+    runs-on: ubuntu-latest
+    needs: [build, trivyScanDockerImage]
+    steps:
+      - name: Running Tests
+        uses: actions/checkout@v3
+      - run: echo "running Tests"
+      # - run: npm test
+  
+  deploy:
+    name: Deploy to EKS
+    environment: 
+      name: production
+      url: https://production.prodxcloud.net/
+    runs-on: ubuntu-latest
+    needs: qa
+    strategy:
+      matrix:
+        environment: [production]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Terraform Setup and Apply
+        id: terraform_apply
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.1.7
+          # cli_config_credentials_hostname: 'terraform.example.com'
+          # cli_config_credentials_token: ${{ env.TF_API_TOKEN }}
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+      - name: Terraform Plan
+        id: terraform_plan
+        run: terraform plan -out=tfplan -var="environment=${{ matrix.environment }}"
+        working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+      - name: Terraform Apply
+        if: matrix.environment == 'qa' || matrix.environment == 'production'
+        run: terraform apply -auto-approve -input=false -lock=false
+        working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
+
+      - name: Kubernetes Setup
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ env.KUBE_CONFIG_DATA }}
+
+      - name: Update kubeconfig
+        run: aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
+        env:
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION}}  
+
+      - name: Get Kubernetes Pods
+        run: kubectl get pods --namespace default
+
+      - name: Get Kubernetes Nodes
+        run: kubectl get nodes
+
+      - name: Get Kubernetes Services
+        run: kubectl get services --namespace default
+
+      - name: Get Load Balancer DNS
+        run: kubectl get services prodxcloud-store
+
+    outputs:
+      APP_NAME: prodxcloud-store
+      AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+      DOCKER_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+      DOCKER_PASSWORD: ${{ env.DOCKERHUB_TOKEN }}
+      KUBE_CONFIG_DATA: ${{ env.KUBE_CONFIG_DATA }}
+      AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+
+      # - name: Kubernetes Deployment
+      #   run: kubectl apply -f k8s/deployment.yaml
 
 ```
 
-pipeline {
-    agent any
-     options {
-        buildDiscarder(logRotator(numToKeepStr: '3'))
-      }
-       environment {
-        DOMAIN_NAME = ""
-        PUBLIC_S3_BUCKET = ""
-        DOCKERHUB_CREDENTIALS = credentials('globaldockerhub')
-        appName = "server"
-        registry = ""
-        registryCredential = ""
-        projectPath = ""
-        AWS_ACCOUNT=credentials('AWS_ACCOUNT')
-        AWS_ACCESS_KEY_ID=credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY=credentials('AWS_SECRET_ACCESS_KEY')
-        AWS_REGION=credentials('AWS_REGION')
-        AWS_EC2_INSTANCE=credentials('AWS_EC2_INSTANCE') # 34.238.119.22 
-        AWS_SSH_KEY = credentials('AWS_SSH_KEY')
-      }
+### Useful Operations / Commands
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', credentialsId: 'github-credentials', url: 'https://github.com/joelwembo/prodx-reactwebui-react-demo-1.git'
-            }
-        }
+```
 
-         stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
+aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
 
-         stage('Run Mocha Tests') {
-            steps {
-                sh 'npm run test' // Assuming your tests are run with 'npm test'
-            }
-        }
+#  eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
+#  Updated context arn:aws:eks:us-east-1:059978233428:cluster/prodxcloud-cluster in /root/.kube/config
 
-        stage('Build React App') {
-            steps {
-                sh 'npm run build' // Build the React application only if tests pass (conditional stage success)
-            }
-        }
+kubectl get svc
 
-        stage('Provision AWS Infrastructure (Terraform)') {
-            steps {
-                sh 'terraform init' // Initialize Terraform
-                sh 'terraform plan' // Validate Terraform configuration
-                input 'Confirm?' message: 'Are you sure you want to deploy to AWS?'
-                sh 'terraform apply -auto-approve' // Apply Terraform configuration (requires confirmation)
-            }
-        }
-        stage('Deploy to CloudFront') {
-            steps {
-                // Upload built React app to S3 bucket (replace with your upload script)
-                sh 'aws s3 cp build/ s3://your-bucket-name/ --recursive --profile default'
-                // Check if Cloudfront was created && Invalidate CloudFront cache to ensure latest content is served (replace with your invalidation script)
-                sh 'aws cloudfront create-invalidation --distribution-id your-distribution-id --paths "/*" --profile default'
-            }
-        }
-    }
+kubectl apply -f k8s/aws-test.yaml
 
-    post {
-        always {
-            cleanWs() // Clean workspace after pipeline execution
-        }
-        success {
-            // Optional: Send notification on successful builds (e.g., email)
-        }
-        failure {
-            // Optional: Send notification on failed builds (e.g., email)
-        }
-    }
-}
+kubectl exec aws-cli -- aws s3api list-buckets
+kubectl get pods
+
+kubectl apply -f k8s/deployment.yaml 
+
+kubectl apply -f k8s/public-lb.yaml
+kubectl apply -f k8s/private-lb.yaml 
+
+kubectl get pods
+kubectl get services
+
+
+kubectl apply -f k8s/cluster-autoscaler.yaml
+# serviceaccount/cluster-autoscaler created
+# clusterrole.rbac.authorization.k8s.io/cluster-autoscaler created
+# role.rbac.authorization.k8s.io/cluster-autoscaler created
+# clusterrolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
+# rolebinding.rbac.authorization.k8s.io/cluster-autoscaler created
+# deployment.apps/cluster-autoscaler created
+# You can verify that the autoscaler pod is up and running with the following command.
+kubectl get pods -n kube-system
+
+
+# kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
+
+# Expose the application without namespace because we are the default namespace
+kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store
+kubectl get services prodxcloud-store
+kubectl get svc
+
+# delete
+
+kubectl delete -f k8s/public-lb.yaml
+kubectl delete -f k8s/private-lb.yaml 
+kubectl delete -f k8s/deployment-nginx.yaml 
+kubectl delete -f k8s/deployment.yaml 
+
+
+# multi-cluster command for manual process
+
+# QA Cluster
+
+eksctl create cluster --name prodxcloud-store-qa --nodegroup-name ng-qa --node-type t3.medium --nodes 2
+aws eks list-clusters
+aws eks --region us-east-1 update-kubeconfig --name prodxcloud-store-qa
+kubectl apply -f ./k8s/deployment-qa.yaml
+kubectl expose deployment prodxcloud-store-qa --type=LoadBalancer --type=LoadBalancer --port=80  --name=prodxcloud-cluster-qa-service
+kubectl get pods
+kubectl get services prodxcloud-cluster-qa-service
+
+# Staging Cluster
+
+eksctl create cluster --name prodxcloud-store-staging --nodegroup-name ng-staging --node-type t3.medium --nodes 2
+aws eks list-clusters
+aws eks --region us-east-1 update-kubeconfig --name prodxcloud-store-staging
+kubectl apply -f ./k8s/deployment-staging.yaml
+kubectl expose deployment prodxcloud-store-staging --type=LoadBalancer --type=LoadBalancer --port=80  --name=prodxcloud-cluster-staging-service
+kubectl get pods
+kubectl get services prodxcloud-cluster-staging-service
 
 ```
 
