@@ -116,8 +116,8 @@ jobs:
       - name: AWS EKS Deployment
         uses: actions/checkout@v3
 
-      - name: Pull the Docker image
-        run: docker pull joelwembo/prodxcloud-store:qa
+    #   - name: Pull the Docker image
+    #     run: docker pull joelwembo/prodxcloud-store:qa
 
       - name: Update kubeconfig
         run: aws eks --region us-east-1 update-kubeconfig --name ${{ env.CLUSTER_NAME}}
@@ -126,9 +126,10 @@ jobs:
         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
 
       - name: Deploy to EKS
-        run: kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --name=${{ env.CLUSTER_SERVICE}} 
-      - name: Get all running cluster  
-        run: aws eks list-clusters
+        # run: kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --type=LoadBalancer --port=80 --name=${{ env.CLUSTER_SERVICE}} 
+        run: kubectl get nodes
+      - name: Get all running pods 
+        run: kubectl get pods
 
       - name: Load Balancer DNS
         run: kubectl get services ${{ env.CLUSTER_SERVICE}}  
