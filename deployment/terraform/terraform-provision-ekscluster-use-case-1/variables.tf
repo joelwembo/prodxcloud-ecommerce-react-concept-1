@@ -8,6 +8,6 @@ variable "domain-name" {
   default = "prodxcloud.net" // Modify as per your domain name
 }
 
-# variable "cluster-name" {
-#   default = "prodxcloud-cluster"
-# }
+variable "cluster-name" {
+  default = "prodxcloud-cluster"
+}

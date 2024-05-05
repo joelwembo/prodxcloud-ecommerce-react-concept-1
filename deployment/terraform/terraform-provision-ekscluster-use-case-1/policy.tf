@@ -9,7 +9,6 @@ resource "aws_iam_openid_connect_provider" "eks" {
 }
 
 
-## test
 
 data "aws_iam_policy_document" "validate_oidc_assume_role_policy" {
   statement {
