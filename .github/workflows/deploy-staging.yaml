@@ -115,7 +115,7 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks --region us-east-1 update-kubeconfig --name ${{ env.CLUSTER_NAME}}
-      - name: Deploy to EKS
+      - name: Apply Deployment for staging
         run: kubectl apply -f ./k8s/deployment-staging.yaml
         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
 

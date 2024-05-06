@@ -120,13 +120,13 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks --region us-east-1 update-kubeconfig --name ${{ env.CLUSTER_NAME}}
-      - name: Deploy to EKS
+      - name: Apply Deployment for qa
         run: kubectl apply -f ./k8s/deployment-qa.yaml
         working-directory: ./deployment/terraform/terraform-provision-ekscluster-use-case-1
 
       - name: Deploy to EKS
-        run: kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --type=LoadBalancer --port=80 --name=${{ env.CLUSTER_SERVICE}} 
-        # run: kubectl get nodes
+        # run: kubectl expose deployment ${{ env.CLUSTER_NAME}} --type=LoadBalancer --type=LoadBalancer --port=80 --name=${{ env.CLUSTER_SERVICE}} 
+        run: kubectl get nodes
       - name: Get all running pods 
         run: kubectl get pods
 
