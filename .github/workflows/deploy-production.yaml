@@ -6,12 +6,12 @@ concurrency:
   group: production
   cancel-in-progress: true
 
-on:
-    push:
-      branches: [master, production/*]
-    pull_request:
-      types: [review_requested]
-      branches: [master, production/*]
+# on:
+#     push:
+#       branches: [master, production/*]
+#     pull_request:
+#       types: [review_requested]
+#       branches: [master, production/*]
 
     workflow_dispatch:
       inputs:

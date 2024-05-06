@@ -1,10 +1,10 @@
 name: QA --> Terraform CI/CD pipeline To AWS EKS Cluster - Enterprise
 
-on:
-  push:
-    branches: ['master' , 'main', 'qa']
-  pull_request:
-    branches: [ "master" , 'main' ,'dev']
+# on:
+#   push:
+#     branches: ['master' , 'main', 'qa']
+#   pull_request:
+#     branches: [ "master" , 'main' ,'dev']
 
   workflow_dispatch:
       inputs:
