@@ -37,3 +37,11 @@ kubectl apply -f ./k8s/deployment-staging.yaml
 kubectl expose deployment prodxcloud-store-staging --type=LoadBalancer --type=LoadBalancer --port=80  --name=prodxcloud-cluster-staging-service
 kubectl get pods
 kubectl get services prodxcloud-cluster-staging-service
+
+# helm and karpenter
+
+helm upgrade --install karpenter karpenter/karpenter \
+--namespace karpenter \
+--create-namespace \
+-f /path/to/values.yaml \
+--version v0.16.3
