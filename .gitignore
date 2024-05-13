@@ -34,3 +34,5 @@ node_modules
 *.tfstate.*
 /build
 ./build
+
+*.pem
