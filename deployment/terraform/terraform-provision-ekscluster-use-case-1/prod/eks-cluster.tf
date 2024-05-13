@@ -29,7 +29,7 @@ resource "aws_eks_cluster" "prodxcloud-cluster" {
   version  = "1.29"
 
   # # multi cluster
-  # count = 3
+  # count = 3   # 3 clusters
   # name            = "${var.cluster-name}_${count.index}"
   # role_arn        = "${aws_iam_role.prodxcloud-cluster.arn}"
 
