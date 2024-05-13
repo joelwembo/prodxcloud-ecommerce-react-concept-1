@@ -24,20 +24,3 @@ gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
 sudo apt update && sudo apt install vault --assume-yes
 
-##
-## $ export VAULT_ADDR='http://127.0.0.1:8200'
-
-## The unseal key and root token are displayed below in case you want to
-## seal/unseal the Vault or re-authenticate.
-
-## Unseal Key: cyUcOBRYgf6PRpAHPYLVwFEDVYwSZDyeGiLrW05WQ40=
-## Root Token: hvs.dPdimWYaIxRsoIh0tedlOjsV
-# export VAULT_TOKEN="hvs.0mb46CdPGEZZQ8h2c9YYsQws"
-
-### Put Secret
-# vault kv put -mount=secret prodxcloud foo=prdx-st
-# vault kv put -mount=secret prodxcloud-api-key key=gf6PRpAHPYLVwFEDVYwSZDyeGiLrW05WQ40=
-## Read Secret
-# vault kv get -mount=secret prodxcloud-api-key
-# Key value
-# vault kv put kv/hello target=prodxcloud-api-key && vault kv get kv/prodxcloud-api-key
