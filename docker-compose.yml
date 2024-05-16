@@ -2,8 +2,8 @@ version: '3'
 
 services:
   webapplication:
-    image: joelwembo/prodxcloud-store:latest
-    container_name: prodxcloud-store 
+    image: joelwembo/prodxcloud-store-prod:latest
+    container_name: prodxcloud-store-prod 
     build:
       context: .
       dockerfile: Dockerfile

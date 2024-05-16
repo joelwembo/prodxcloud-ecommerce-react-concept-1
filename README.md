@@ -332,19 +332,12 @@ jobs:
 ### Useful Operations / Commands
 
 ```
-
-
 kubectl get svc
 
-kubectl apply -f k8s/aws-test.yaml
-
-kubectl exec aws-cli -- aws s3api list-buckets
 kubectl get pods
 
-kubectl apply -f k8s/deployment.yaml 
+kubectl apply -f k8s/deployment-prod.yaml 
 
-kubectl apply -f k8s/public-lb.yaml
-kubectl apply -f k8s/private-lb.yaml 
 
 kubectl get pods
 kubectl get services
@@ -357,11 +350,11 @@ kubectl get pods -n kube-system
 
 ```
 
-kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
+kubectl expose deployment prodxcloud-store-prod --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store-prod --name=prodxcloud-store-prod
 
 Expose the application without namespace because we are the default namespace
-kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store
-kubectl get services prodxcloud-store
+kubectl expose deployment prodxcloud-store-prod --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store-prod
+kubectl get services prodxcloud-store-prod
 kubectl get svc
 ```
 

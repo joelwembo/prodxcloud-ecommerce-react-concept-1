@@ -1,24 +1,22 @@
 
-aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster
+aws eks --region us-east-1 update-kubeconfig --name prodxcloud-cluster-prod
 kubectl get svc
 kubectl get pods
-kubectl get pods
+kubectl get nodes
 kubectl get services
 
+kubectl apply -f k8s/deployment-prod.yaml 
 
-kubectl apply -f k8s/deployment.yaml 
-
-
-kubectl apply -f k8s/cluster-autoscaler.yaml
-kubectl get pods -n kube-system
-# kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 -n prodxcloud-store --name=prodxcloud-store
 # Expose the application without namespace because we are the default namespace
-kubectl expose deployment prodxcloud-store --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store
-kubectl get services prodxcloud-store
+kubectl expose deployment prodxcloud-store-prod --type=LoadBalancer --port=80  --target-port=80 --name=prodxcloud-store-prod
+kubectl get services prodxcloud-store-prod
 kubectl get svc
 
 # delete
-kubectl delete -f k8s/deployment.yaml 
+kubectl delete -f k8s/deployment-prod.yaml 
+kubectl delete -f k8s/deployment-qa.yaml 
+kubectl delete svc prodxcloud-store-prod
+kubectl delete svc prodxcloud-store-qa
 # multi-cluster command for manual process
 
 # QA Cluster
