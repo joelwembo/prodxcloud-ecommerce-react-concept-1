@@ -1,4 +1,4 @@
-name: prodxcloud.io Build and Deploy
+name: prodxcloud.io Build and Deploy to Amazon EC2 
 
 on:
   push:
@@ -9,9 +9,9 @@ on:
 
 env:
   ENVIRONMENT: ${{ github.ref_name }}
-  REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-  REMOTE_USER: ${{ secrets.REMOTE_USER }}
-  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}  
+  REMOTE_HOST: ${{ secrets.REMOTE_HOST_INSTANCE_2 }}
+  REMOTE_USER: ${{ secrets.REMOTE_USER_INSTANCE_2 }}
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY_INSTANCE_2 }}  
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_DEFAULT_REGION: "us-east-1"   
